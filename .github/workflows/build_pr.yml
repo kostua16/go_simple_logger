@@ -1,0 +1,42 @@
+name: Build pull request
+
+on:
+  # pull_request event is required only for autolabeler
+  pull_request:
+    # Only following types are handled by the action, but one can default to all as well
+    types: [ opened, edited, reopened, synchronize ]
+
+jobs:
+  Build:
+    name: Build project
+    runs-on: ubuntu-latest
+    steps:
+      ########################
+      # Cancel Previous Runs #
+      ########################
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ secrets.GH_TKN }}
+      ##########################
+      # Checkout the code base #
+      ##########################
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TKN }}
+          fetch-depth: 0
+      ###############
+      # Install JDK #
+      ###############
+      - name: Set up GO
+        uses: actions/setup-go@v3
+        with:
+          go-version: ‘1.16.0’
+      #################
+      # Build project #
+      #################
+      - name: Build with Go
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TKN }}  # Needed to get PR information, if any
+        run: go build -v -o build/ ./...
