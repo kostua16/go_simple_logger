@@ -16,7 +16,7 @@ func (s *LogService) GetLogs() []LogEntry {
 }
 
 func (s *LogService) CleanLogs() {
-	tx := s.db.API().Delete(&LogEntry{}, "created_at < ?", time.Now().Add(-1*time.Hour))
+	tx := s.db.API().Delete(&LogEntry{}, "created_at < ?", time.Now().Add(-1*time.Second))
 	defer tx.Commit()
 }
 
